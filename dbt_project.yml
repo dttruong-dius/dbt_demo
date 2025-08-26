@@ -1,0 +1,11 @@
+name: "dbt_demo"
+version: "1.0"
+config-version: 2
+
+profile: "dbt_demo_profile"
+
+model-paths: ["models"]
+
+models:
+  dbt_demo:
+    +materialized: table

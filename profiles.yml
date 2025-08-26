@@ -1,0 +1,10 @@
+dbt_demo_profile:
+  target: dev
+  outputs:
+    dev:
+      type: databricks
+      method: oauth  # or 'http' if using PAT
+      catalog: hive_metastore
+      schema: dbt_demo_schema   # replace with your schema name
+      host: hipages-ml-uat-ws.cloud.databricks.com   # e.g. adb-123456.7.azuredatabricks.net
+      http_path: /sql/1.0/warehouses/8b5bb45ca0974c4c  # from SQL Warehouse connection details
