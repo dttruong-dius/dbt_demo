@@ -24,5 +24,4 @@ from
     inner join lakehouse_production.ml_features_location_static.regionid_test_mapping as rtm on rtm.region_id = rlm.region_id
 where
     a.job_lead_created_date_dim_key > 20250100
-    and a.job_lead_claimed = true
 sort by lead_created_timestamp
