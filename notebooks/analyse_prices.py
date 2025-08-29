@@ -51,23 +51,26 @@ np.percentile(num_claims, 99), np.percentile(num_claims, 95)
 
 # Count number of cases
 # case 1: all claims in first round first batch
-# case 2: all claims in first round first batch and first round other batches
-# case 3: no claims in first round
+# case 2: all claims in the first round
+# case 3: some claims in the first round first batch and other batches or rounds
+# case 4: others
 cases = defaultdict(int)
 for job_id, group in tqdm(claimed_leads.groupby(by="job_id")):
     claimed_in = (group["claimed_in"]).unique()
     if len(claimed_in) == 1 and "first-round-first-batch" in claimed_in:
         cases["case_1"] += 1
-    elif len(claimed_in) == 2 and "first-round-first-batch" in claimed_in and "first-round-other-batches" in claimed_in:
+    if len(claimed_in) == 2 and "first-round-first-batch" in claimed_in and "first-round-other-batches" in claimed_in:
         cases["case_2"] += 1
+    elif "first-round-first-batch" in claimed_in:
+        cases["case_3"] += 1
     else:
-        cases["others"] += 1
+        cases["case_4"] += 1
 print(cases)
 
 
 # COMMAND ----------
 
-for case in cases:
+for case in sorted(cases.keys()):
     print(case, cases[case], cases[case] / sum(cases.values()))
 
 # COMMAND ----------
