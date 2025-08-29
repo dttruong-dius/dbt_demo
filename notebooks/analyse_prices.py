@@ -51,15 +51,15 @@ np.percentile(num_claims, 99), np.percentile(num_claims, 95)
 
 # Count number of cases
 # case 1: all claims in first round first batch
-# case 2: all claims in the first round
-# case 3: some claims in the first round first batch and other batches or rounds
+# case 2: some claims in the first round first batch and some in other batches of the first round
+# case 3: some claims in the first round first batch and otherrounds
 # case 4: others
 cases = defaultdict(int)
 for job_id, group in tqdm(claimed_leads.groupby(by="job_id")):
     claimed_in = (group["claimed_in"]).unique()
     if len(claimed_in) == 1 and "first-round-first-batch" in claimed_in:
         cases["case_1"] += 1
-    if len(claimed_in) == 2 and "first-round-first-batch" in claimed_in and "first-round-other-batches" in claimed_in:
+    elif "first-round-first-batch" in claimed_in and "first-round-other-batches" in claimed_in:
         cases["case_2"] += 1
     elif "first-round-first-batch" in claimed_in:
         cases["case_3"] += 1
@@ -70,22 +70,38 @@ print(cases)
 
 # COMMAND ----------
 
+ len(claimed_leads["job_id"].unique()), len(claimed_leads.groupby(by="job_id")), sum(cases.values())
+
+# COMMAND ----------
+
 for case in sorted(cases.keys()):
-    print(case, cases[case], cases[case] / sum(cases.values()))
+    print(case, cases[case], cases[case] /  sum(cases.values()))
 
 # COMMAND ----------
 
 # Compute discounts for each job having the first-round-first-batch and first-round-other-batches
 discount_rows = []
 for idx, group in claimed_leads.groupby(by="job_id"):
-    if len(group) > 1 and "first-round-first-batch" in list(group["claimed_in"]) and "first-round-other-batches" in list(group["claimed_in"]):
+    claimed_in = list((group["claimed_in"]).unique())
+    if "first-round-first-batch" in claimed_in and "first-round-other-batches" in claimed_in:
         first_batch = group[group["claimed_in"] == "first-round-first-batch"]
         other_batches = group[group["claimed_in"] == "first-round-other-batches"]
         mean_price = group["job_lead_price"].mean()
+        other_batches_price = other_batches["job_lead_price"].mean()
         first_batch_price = first_batch["job_lead_price"].mean()
-        absolute_discount = first_batch_price - mean_price
-        discount_percentage = absolute_discount / first_batch_price * 100
-        discount_rows.append(dict(first_batch_price=first_batch_price, mean_price=mean_price, absolute_discount=absolute_discount, discount_percentage=discount_percentage))
+        discount_value_to_mean = first_batch_price - mean_price
+        discount_percentage_to_mean = discount_value_to_mean / first_batch_price * 100
+        discount_value_to_other_batches = first_batch_price - other_batches_price
+        discount_percentage_to_other_batches = discount_value_to_other_batches / first_batch_price * 100
+        discount_rows.append(dict(
+            first_batch_price=first_batch_price,
+            mean_price=mean_price,
+            other_batches_price=other_batches_price,
+            discount_value_to_mean=discount_value_to_mean,
+            discount_percentage_to_mean=discount_percentage_to_mean,
+            discount_value_to_other_batches=discount_value_to_other_batches,
+            discount_percentage_to_other_batches=discount_percentage_to_other_batches
+        ))
 discount_df = pd.DataFrame(discount_rows)
 
 # COMMAND ----------
@@ -95,26 +111,39 @@ len(discount_df), len(discount_df) / len(claimed_leads["job_id"].unique())
 # COMMAND ----------
 
 fig, ax = plt.subplots()
-ax.hist(discount_df["absolute_discount"], bins=range(-40, 60, 10))
-ax.set_xlabel("Absolute discount")
+ax.hist(discount_df["discount_value_to_mean"], bins=range(-40, 60, 10))
+ax.set_xlabel("Discount value to mean")
 ax.set_ylabel("Number of jobs")
 ax.grid("both")
 
 # COMMAND ----------
 
 fig, ax = plt.subplots()
-ax.hist(discount_df["discount_percentage"], range=(-60, 60), bins=range(-60, 60, 10))
-ax.set_xlabel("Discount percentage")
+ax.hist(discount_df["discount_percentage_to_mean"], range=(-60, 60), bins=range(-60, 60, 10))
+ax.set_xlabel("Discount percentage from mean")
 ax.set_ylabel("Number of jobs")
 ax.grid("both")
 
 # COMMAND ----------
 
-job_types = spark.sql("SELECT * FROM lakehouse_production.ml_features.over_under_claim_raticate_payload where date >= '2025-01-01'").toPandas()
+fig, ax = plt.subplots()
+ax.hist(discount_df["discount_value_to_other_batches"], bins=range(-40, 60, 10))
+ax.set_xlabel("Discount value to other batches")
+ax.set_ylabel("Number of jobs")
+ax.grid("both")
 
 # COMMAND ----------
 
-len(job_types)
+fig, ax = plt.subplots()
+ax.hist(discount_df["discount_percentage_to_other_batches"], range=(-60, 60), bins=range(-60, 60, 10))
+ax.set_xlabel("Discount percentage to other batches")
+ax.set_ylabel("Number of jobs")
+ax.grid("both")
+
+# COMMAND ----------
+
+# job_types = spark.sql("SELECT * FROM lakehouse_production.ml_features.over_under_claim_raticate_payload where date >= '2025-01-01'").toPandas()
+# len(job_types)
 
 # COMMAND ----------
 
