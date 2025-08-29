@@ -11,23 +11,11 @@ select
     a.job_lead_price,
     a.job_lead_claimed,
     case
-        when a.job_lead_round_type = 'first-round'
-        and job_lead_invitation_round = 0 then 1
-        else 0
-    end as is_first_round_first_batch,
-    case
-        when a.job_lead_round_type = 'first-round'
-        and job_lead_invitation_round <> 0 then 1
-        else 0
-    end as is_first_round_other_batches,
-    case
-        when a.job_lead_round_type = 're-invitation' then 1
-        else 0
-    end as is_reinvitation_round,
-    case
-        when a.job_lead_round_type not in ('re-invitation', 'first-round') then 1
-        else 0
-    end as is_other_rounds
+        when a.job_lead_round_type = 'first-round' and job_lead_invitation_round = 0 then 'first-round-first-batch'
+        when a.job_lead_round_type = 'first-round' and job_lead_invitation_round <> 0 then 'first-round-other-batches'
+        when a.job_lead_round_type = 're-invitation' then 'reinvitation-round'
+        else 'other-rounds'
+    end as claimed_in
 from
     lakehouse_production.gold.lead_management__fact_job_leads_enriched as a
     left join hive_metastore.long_lake.dim_category_databricks as b on a.job_category_id = b.category_dim_key
@@ -52,3 +40,4 @@ where
         'Outdoor Constructions',
         'Appliances & Climate Control'
     )
+sort by lead_created_timestamp
