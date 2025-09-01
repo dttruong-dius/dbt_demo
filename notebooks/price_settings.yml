@@ -1,0 +1,378 @@
+---
+pricing_info:
+    - master_category: Painting & Wallpapering
+      model_lgbm_weights: 1.05
+      model_linear_weights: 0.50
+      model_loglinear_weights: 0.40
+      multiplier_lower: 0.80
+      multiplier_upper: 1.92
+      control_multiplier_lower: 0.80
+      control_multiplier_upper: 1.92
+      price_higher: 270
+      price_lower: 38
+    - master_category: Cleaning
+      model_lgbm_weights: 0.65
+      model_linear_weights: 0.20
+      model_loglinear_weights: 0.25
+      multiplier_lower: 0.55
+      multiplier_upper: 1.20
+      control_multiplier_lower: 0.55
+      control_multiplier_upper: 1.20
+      price_higher: 90
+      price_lower: 11
+    - master_category: Bathroom, Tiling & Waterproofing
+      model_lgbm_weights: 1.10
+      model_linear_weights: 0.25
+      model_loglinear_weights: 0.25
+      multiplier_lower: 0.80
+      multiplier_upper: 1.92
+      control_multiplier_lower: 0.80
+      control_multiplier_upper: 1.92
+      price_higher: 105
+      price_lower: 17
+    - master_category: Electricians
+      model_lgbm_weights: 1.05
+      model_linear_weights: 0.60
+      model_loglinear_weights: 0.70
+      control_model_lgbm_weights: 1.05
+      control_model_linear_weights: 0.60
+      control_model_loglinear_weights: 0.70
+      multiplier_lower: 0.85
+      multiplier_upper: 1.92
+      control_multiplier_lower: 0.85
+      control_multiplier_upper: 1.92
+      price_higher: 150
+      price_lower: 13
+    - master_category: Handyman
+      model_lgbm_weights: 0.55
+      model_linear_weights: 0.2
+      model_loglinear_weights: 0.15
+      multiplier_lower: 0.60
+      multiplier_upper: 1.20
+      control_multiplier_lower: 0.60
+      control_multiplier_upper: 1.20
+      price_higher: 35
+      price_lower: 9
+    - master_category: Roofing & Guttering
+      model_lgbm_weights: 1.05
+      model_linear_weights: 0.35
+      model_loglinear_weights: 0.2
+      multiplier_lower: 0.90
+      multiplier_upper: 1.60
+      control_multiplier_lower: 0.80
+      control_multiplier_upper: 1.60
+      price_higher: 90
+      price_lower: 21
+    - master_category: Concreting
+      model_lgbm_weights: 0.70
+      model_linear_weights: 0.35
+      model_loglinear_weights: 0.35
+      multiplier_lower: 0.85
+      multiplier_upper: 1.92
+      control_multiplier_lower: 0.85
+      control_multiplier_upper: 1.92
+      price_higher: 125
+      price_lower: 21
+    - master_category: Fencing
+      model_lgbm_weights: 1.15
+      model_linear_weights: 0.40
+      model_loglinear_weights: 0.35
+      multiplier_lower: 0.75
+      multiplier_upper: 1.92
+      control_multiplier_lower: 0.75
+      control_multiplier_upper: 1.92
+      price_higher: 95
+      price_lower: 9
+    - master_category: Plastering
+      model_lgbm_weights: 0.85
+      model_linear_weights: 0.65
+      model_loglinear_weights: 0.15
+      multiplier_lower: 0.85
+      multiplier_upper: 1.60
+      control_multiplier_lower: 0.85
+      control_multiplier_upper: 1.60
+      price_higher: 130
+      price_lower: 21
+    - master_category: Landscaping & Paving
+      model_lgbm_weights: 1.10
+      model_linear_weights: 0.40
+      model_loglinear_weights: 0.20
+      multiplier_lower: 0.80
+      multiplier_upper: 1.60
+      control_multiplier_lower: 0.70
+      control_multiplier_upper: 1.60
+      price_higher: 100
+      price_lower: 17
+    - master_category: Architecture & Building
+      model_lgbm_weights: 0.95
+      model_linear_weights: 0.75
+      model_loglinear_weights: 0.05
+      multiplier_lower: 0.90
+      multiplier_upper: 1.60
+      control_multiplier_lower: 0.85
+      control_multiplier_upper: 1.60
+      price_higher: 180
+      price_lower: 21
+    - master_category: Appliances & Climate Control
+      model_lgbm_weights: 0.70
+      model_linear_weights: 0.30
+      model_loglinear_weights: 0.10
+      multiplier_lower: 0.60
+      multiplier_upper: 1.92
+      control_multiplier_lower: 0.60
+      control_multiplier_upper: 1.92
+      price_higher: 75
+      price_lower: 7
+    - master_category: Carpentry
+      model_lgbm_weights: 1.30
+      model_linear_weights: 0.30
+      model_loglinear_weights: 0.20
+      multiplier_lower: 0.80
+      multiplier_upper: 1.40
+      control_multiplier_lower: 0.80
+      control_multiplier_upper: 1.40
+      price_higher: 105
+      price_lower: 12
+    - master_category: Excavation & Equipment Hire
+      model_lgbm_weights: 1.10
+      model_linear_weights: 0.10
+      model_loglinear_weights: 0.10
+      multiplier_lower: 0.80
+      multiplier_upper: 2.10
+      control_multiplier_lower: 0.80
+      control_multiplier_upper: 2.10
+      price_higher: 95
+      price_lower: 15
+    - master_category: Flooring
+      model_lgbm_weights: 0.90
+      model_linear_weights: 0.35
+      model_loglinear_weights: 0.15
+      multiplier_lower: 0.70
+      multiplier_upper: 1.60
+      control_multiplier_lower: 0.70
+      control_multiplier_upper: 1.60
+      price_higher: 100
+      price_lower: 13
+    - master_category: Garden Maintenance
+      model_lgbm_weights: 0.65
+      model_linear_weights: 0.35
+      model_loglinear_weights: 0.15
+      multiplier_lower: 0.75
+      multiplier_upper: 1.80
+      control_multiplier_lower: 0.75
+      control_multiplier_upper: 1.80
+      price_higher: 90
+      price_lower: 12
+    - master_category: Kitchen & Shopfitting
+      model_lgbm_weights: 1.18
+      model_linear_weights: 0.50
+      model_loglinear_weights: 0.50
+      multiplier_lower: 0.70
+      multiplier_upper: 1.60
+      control_multiplier_lower: 0.70
+      control_multiplier_upper: 1.60
+      price_higher: 90
+      price_lower: 13
+    - master_category: Outdoor Constructions
+      model_lgbm_weights: 0.80
+      model_linear_weights: 0.40
+      model_loglinear_weights: 0.25
+      multiplier_lower: 0.70
+      multiplier_upper: 1.92
+      control_multiplier_lower: 0.70
+      control_multiplier_upper: 1.92
+      price_higher: 125
+      price_lower: 17
+    - master_category: Plumbing
+      model_lgbm_weights: 1.30
+      model_linear_weights: 0.55
+      model_loglinear_weights: 0.50
+      control_model_lgbm_weights: 1.30
+      control_model_linear_weights: 0.55
+      control_model_loglinear_weights: 0.50
+      multiplier_lower: 0.70
+      multiplier_upper: 1.92
+      control_multiplier_lower: 0.70
+      control_multiplier_upper: 1.92
+      price_higher: 125
+      price_lower: 15
+    - master_category: Rendering
+      model_lgbm_weights: 1.05
+      model_linear_weights: 0.25
+      model_loglinear_weights: 0.08
+      multiplier_lower: 0.75
+      multiplier_upper: 1.60
+      control_multiplier_lower: 0.75
+      control_multiplier_upper: 1.60
+      price_higher: 80
+      price_lower: 26
+    - master_category: Shades & Screens
+      model_lgbm_weights: 0.75
+      model_linear_weights: 0.1
+      model_loglinear_weights: 0.25
+      multiplier_lower: 0.75
+      multiplier_upper: 1.60
+      control_multiplier_lower: 0.75
+      control_multiplier_upper: 1.60
+      price_higher: 95
+      price_lower: 9
+    - master_category: Tree Felling & Surgery
+      model_lgbm_weights: 1.10
+      model_linear_weights: 0.40
+      model_loglinear_weights: 0.20
+      multiplier_lower: 0.75
+      multiplier_upper: 1.30
+      control_multiplier_lower: 0.75
+      control_multiplier_upper: 1.30
+      price_higher: 110
+      price_lower: 26
+    - master_category: Windows & Doors
+      model_lgbm_weights: 0.6
+      model_linear_weights: 0.2
+      model_loglinear_weights: 0.25
+      multiplier_lower: 0.75
+      multiplier_upper: 1.60
+      control_multiplier_lower: 0.75
+      control_multiplier_upper: 1.60
+      price_higher: 80
+      price_lower: 7
+    - master_category: Inspections
+      model_lgbm_weights: 0.95
+      model_linear_weights: 0.35
+      model_loglinear_weights: 0.20
+      multiplier_lower: 0.80
+      multiplier_upper: 1.92
+      control_multiplier_lower: 0.80
+      control_multiplier_upper: 1.92
+      price_higher: 120
+      price_lower: 10
+    - master_category: Bricklaying
+      model_lgbm_weights: 0.75
+      model_linear_weights: 0.35
+      model_loglinear_weights: 0.20
+      multiplier_lower: 0.80
+      multiplier_upper: 1.60
+      control_multiplier_lower: 0.80
+      control_multiplier_upper: 1.60
+      price_higher: 95
+      price_lower: 16
+    - master_category: Demolition & Asbestos Removal
+      model_lgbm_weights: 0.70
+      model_linear_weights: 0.30
+      model_loglinear_weights: 0.10
+      multiplier_lower: 0.80
+      multiplier_upper: 1.60
+      control_multiplier_lower: 0.80
+      control_multiplier_upper: 1.60
+      price_higher: 100
+      price_lower: 23
+    - master_category: Fireplaces
+      model_lgbm_weights: 0.75
+      model_linear_weights: 0.35
+      model_loglinear_weights: 0.20
+      multiplier_lower: 0.80
+      multiplier_upper: 1.60
+      control_multiplier_lower: 0.80
+      control_multiplier_upper: 1.60
+      price_higher: 65
+      price_lower: 7
+    - master_category: Furniture Removal
+      model_lgbm_weights: 0.75
+      model_linear_weights: 0.35
+      model_loglinear_weights: 0.20
+      multiplier_lower: 0.80
+      multiplier_upper: 1.60
+      control_multiplier_lower: 0.80
+      control_multiplier_upper: 1.60
+      price_higher: 75
+      price_lower: 10
+    - master_category: Insulation
+      model_lgbm_weights: 0.70
+      model_linear_weights: 0.30
+      model_loglinear_weights: 0.10
+      multiplier_lower: 0.80
+      multiplier_upper: 1.60
+      control_multiplier_lower: 0.80
+      control_multiplier_upper: 1.60
+      price_higher: 75
+      price_lower: 15
+    - master_category: Interior Design
+      model_lgbm_weights: 0.65
+      model_linear_weights: 0.30
+      model_loglinear_weights: 0.10
+      multiplier_lower: 0.80
+      multiplier_upper: 1.60
+      control_multiplier_lower: 0.80
+      control_multiplier_upper: 1.60
+      price_higher: 115
+      price_lower: 16
+    - master_category: Locksmithing
+      model_lgbm_weights: 0.80
+      model_linear_weights: 0.35
+      model_loglinear_weights: 0.20
+      multiplier_lower: 0.80
+      multiplier_upper: 1.60
+      control_multiplier_lower: 0.80
+      control_multiplier_upper: 1.60
+      price_higher: 60
+      price_lower: 10
+    - master_category: Pest Control
+      model_lgbm_weights: 0.70
+      model_linear_weights: 0.35
+      model_loglinear_weights: 0.20
+      multiplier_lower: 0.80
+      multiplier_upper: 1.60
+      control_multiplier_lower: 0.80
+      control_multiplier_upper: 1.60
+      price_higher: 55
+      price_lower: 12
+    - master_category: Pool Building & Maintainance
+      model_lgbm_weights: 0.80
+      model_linear_weights: 0.35
+      model_loglinear_weights: 0.20
+      multiplier_lower: 0.80
+      multiplier_upper: 1.60
+      control_multiplier_lower: 0.80
+      control_multiplier_upper: 1.60
+      price_higher: 90
+      price_lower: 12
+    - master_category: Security & Home Entertainment
+      model_lgbm_weights: 0.75
+      model_linear_weights: 0.35
+      model_loglinear_weights: 0.20
+      multiplier_lower: 0.80
+      multiplier_upper: 1.60
+      control_multiplier_lower: 0.80
+      control_multiplier_upper: 1.60
+      price_higher: 125
+      price_lower: 12
+    - master_category: Skip Hire, Truck Hire & Rubbish Removal
+      model_lgbm_weights: 0.60
+      model_linear_weights: 0.30
+      model_loglinear_weights: 0.10
+      multiplier_lower: 0.80
+      multiplier_upper: 1.60
+      control_multiplier_lower: 0.80
+      control_multiplier_upper: 1.60
+      price_higher: 80
+      price_lower: 10
+    - master_category: Staircases
+      model_lgbm_weights: 0.85
+      model_linear_weights: 0.35
+      model_loglinear_weights: 0.20
+      multiplier_lower: 0.80
+      multiplier_upper: 1.60
+      control_multiplier_lower: 0.80
+      control_multiplier_upper: 1.60
+      price_higher: 85
+      price_lower: 10
+    - master_category: Stonemasonry
+      model_lgbm_weights: 0.80
+      model_linear_weights: 0.35
+      model_loglinear_weights: 0.20
+      multiplier_lower: 0.80
+      multiplier_upper: 1.60
+      control_multiplier_lower: 0.80
+      control_multiplier_upper: 1.60
+      price_higher: 80
+      price_lower: 10
