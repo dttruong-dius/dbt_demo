@@ -96,7 +96,7 @@ claimed_leads["upper_bound_price"] = claimed_leads["master_category"].map(catego
 # COMMAND ----------
 
 # Compute discounts for each job having the first-round-first-batch and first-round-other-batches
-discount_rows = []
+price_comparison = []
 for job_id, group in claimed_leads.groupby(by="job_id"):
     claimed_in = list((group["claimed_in"]).unique())
     if "first-round-first-batch" in claimed_in and "first-round-other-batches" in claimed_in:
@@ -106,29 +106,27 @@ for job_id, group in claimed_leads.groupby(by="job_id"):
         other_batches_price = other_batches["job_lead_price"].mean()
         first_batch_price = first_batch["job_lead_price"].mean()
         prediction_over_upper_bound_ratio = first_batch_price / group["upper_bound_price"].iloc[0]
-        discount_value_to_other_batches = first_batch_price - other_batches_price
-        discount_percentage_to_other_batches = discount_value_to_other_batches / first_batch_price * 100
-        discount_rows.append(dict(
+        first_batch_price_over_other_batches_price_ratio = first_batch_price / other_batches_price
+        price_comparison.append(dict(
             job_id=job_id,
             upper_bound_price=group["upper_bound_price"].iloc[0],
             first_batch_price=first_batch_price,
             mean_price=mean_price,
             other_batches_price=other_batches_price,
-            discount_value_to_other_batches=discount_value_to_other_batches,
-            discount_percentage_to_other_batches=discount_percentage_to_other_batches,
+            first_batch_price_over_other_batches_price_ratio=first_batch_price_over_other_batches_price_ratio,
             prediction_over_upper_bound_ratio=prediction_over_upper_bound_ratio,
         ))
-discount_df = pd.DataFrame(discount_rows)
-discount_df.head()
+price_comparison = pd.DataFrame(price_comparison)
+price_comparison.head()
 
 # COMMAND ----------
 
-len(discount_df), len(discount_df) / len(claimed_leads["job_id"].unique())
+len(price_comparison), len(price_comparison) / len(claimed_leads["job_id"].unique())
 
 # COMMAND ----------
 
 fig, ax = plt.subplots()
-ax.hist(discount_df["prediction_over_upper_bound_ratio"].replace([np.inf, -np.inf], np.nan).dropna(), bins=np.arange(0, 1.4, 0.1))
+ax.hist(price_comparison["prediction_over_upper_bound_ratio"].replace([np.inf, -np.inf], np.nan).dropna(), bins=np.arange(0, 1.4, 0.1))
 ax.set_xlabel("prediction_over_upper_bound_ratio")
 ax.set_ylabel("Number of jobs")
 ax.grid("both")
@@ -136,17 +134,10 @@ ax.grid("both")
 # COMMAND ----------
 
 fig, ax = plt.subplots()
-ax.hist(discount_df["discount_value_to_other_batches"], bins=range(-40, 60, 10))
-ax.set_xlabel("Discount value to other batches")
+ax.hist(price_comparison["first_batch_price_over_other_batches_price_ratio"], bins=np.arange(0, 5, 0.5))
+ax.set_xlabel("first_batch_price_over_other_batches_price_ratio")
 ax.set_ylabel("Number of jobs")
-ax.grid("both")
-
-# COMMAND ----------
-
-fig, ax = plt.subplots()
-ax.hist(discount_df["discount_percentage_to_other_batches"], range=(-60, 60), bins=range(-60, 60, 10))
-ax.set_xlabel("Discount percentage to other batches")
-ax.set_ylabel("Number of jobs")
+ax.set_xticks(np.arange(0, 5, 0.5))
 ax.grid("both")
 
 # COMMAND ----------
