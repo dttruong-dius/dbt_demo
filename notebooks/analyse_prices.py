@@ -9,6 +9,11 @@ import yaml
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC # Analyse the prices between different batches
+
+# COMMAND ----------
+
 num_leads = spark.sql("SELECT count(*) from lakehouse_development.ml_features.analysis_job_lead_prices").toPandas()
 num_leads = num_leads.iloc[0][0]
 
@@ -152,6 +157,77 @@ ax.grid("both")
 # price_predictions = spark.sql("select date, get_json_object(request, '$.dataframe_split.data[0][0]') as job_id, get_json_object(response, '$.predictions.final_price') as predicted_price from lakehouse_production.ml_features.persian_payload where date >= '2025-01-01' and status_code = '200'").toPandas()
 # print(len(price_predictions))
 # price_predictions.head()
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC # Compute the zero-claims accuracy
+
+# COMMAND ----------
+
+query = """
+with predictions as (
+    WITH ranked_requests AS (
+    SELECT 
+        date, 
+        get_json_object(request, '$.dataframe_split.data[0][0]') as job_id, 
+        get_json_object(response, '$.predictions.prediction_zc') as zero_claims,
+        ROW_NUMBER() OVER (PARTITION BY get_json_object(request, '$.dataframe_split.data[0][0]') ORDER BY date DESC) as rn
+    FROM lakehouse_production.ml_features.persian_payload 
+    WHERE date >= '2025-01-01' AND status_code = '200'
+    )
+    SELECT 
+        date,
+        job_id,
+        zero_claims
+        FROM ranked_requests
+    WHERE rn = 1
+),
+total_claims as (
+    select 
+        job_id,
+        sum(case when job_lead_claimed = 'true' then 1 else 0 end) as num_claims,
+        case when num_claims = 0 then 1 else 0 end as true_zero_claims
+    from lakehouse_development.ml_features.analysis_job_lead_prices
+    group by job_id
+)
+select predictions.job_id, predictions.date, predictions.zero_claims as predicted_zero_claims, total_claims.true_zero_claims, total_claims.num_claims
+from predictions inner join total_claims on predictions.job_id = total_claims.job_id
+"""
+zero_claims = spark.sql(query).toPandas()
+len(zero_claims)
+
+# COMMAND ----------
+
+zero_claims.head()
+
+# COMMAND ----------
+
+zero_claims["predicted_zero_claims"] = zero_claims["predicted_zero_claims"].astype(int)
+zero_claims["true_zero_claims"] = zero_claims["true_zero_claims"].astype(int)
+
+# COMMAND ----------
+
+true_positives = sum((zero_claims["predicted_zero_claims"] == 1) & (zero_claims["true_zero_claims"] == 1))
+false_positives = sum((zero_claims["predicted_zero_claims"] == 1) & (zero_claims["true_zero_claims"] == 0))
+true_negatives = sum((zero_claims["predicted_zero_claims"] == 0) & (zero_claims["true_zero_claims"] == 0))
+false_negatives = sum((zero_claims["predicted_zero_claims"] == 0) & (zero_claims["true_zero_claims"] == 1))
+precision = true_positives / (true_positives + false_positives)
+recall = true_positives / (true_positives + false_negatives)
+print(f"Precision: {precision}")
+print(f"Recall: {recall}")
+
+# COMMAND ----------
+
+true_positives + false_positives, true_positives + false_negatives
+
+# COMMAND ----------
+
+len(zero_claims)
+
+# COMMAND ----------
+
+true_positives + true_negatives + false_positives + false_negatives == len(zero_claims)
 
 # COMMAND ----------
 
