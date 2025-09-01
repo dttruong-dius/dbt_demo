@@ -1,8 +1,8 @@
 create or replace table lakehouse_development.ml_features.analysis_job_lead_prices
 as
 select
-    from_utc_timestamp (a.job_lead_created_timestamp, 'Australia/Sydney') as lead_created_timestamp,
-    from_utc_timestamp (j.__dl_updated_ts, 'Australia/Sydney') as job_updated_timestamp,
+    from_utc_timestamp(a.job_lead_created_timestamp, 'Australia/Sydney') as lead_created_timestamp,
+    from_utc_timestamp(j.__dl_updated_ts, 'Australia/Sydney') as job_updated_timestamp,
     a.lead_id,
     a.job_id,
     rtm.is_test_region_level,
@@ -23,5 +23,5 @@ from
     inner join lakehouse_production.ml_features.int_regionid_statecode_mapping__location as rlm on j.job_suburb_id = rlm.suburb_id
     inner join lakehouse_production.ml_features_location_static.regionid_test_mapping as rtm on rtm.region_id = rlm.region_id
 where
-    a.job_lead_created_date_dim_key >= 20250101
+    from_utc_timestamp(a.job_lead_created_timestamp, 'Australia/Sydney') >= '2024-01-01'
 sort by lead_created_timestamp
