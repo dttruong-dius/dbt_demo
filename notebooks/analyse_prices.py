@@ -14,13 +14,15 @@ import yaml
 
 # COMMAND ----------
 
-num_leads = spark.sql("SELECT count(*) from lakehouse_development.ml_features.analysis_job_lead_prices").toPandas()
+start_date = '2025-01-01'
+end_date = '2025-09-01'
+num_leads = spark.sql(f"SELECT count(*) from lakehouse_development.ml_features.analysis_job_lead_prices where lead_created_timestamp >= '{start_date}' and lead_created_timestamp <= '{end_date}'").toPandas()
 num_leads = num_leads.iloc[0][0]
 
 # COMMAND ----------
 
 # Count the number jobs
-num_jobs = spark.sql("SELECT count(DISTINCT job_id) from lakehouse_development.ml_features.analysis_job_lead_prices").toPandas()
+num_jobs = spark.sql(f"SELECT count(DISTINCT job_id) from lakehouse_development.ml_features.analysis_job_lead_prices where lead_created_timestamp >= '{start_date}' and lead_created_timestamp <= '{end_date}'").toPandas()
 num_jobs = num_jobs.iloc[0][0]
 
 # COMMAND ----------
@@ -30,7 +32,7 @@ print(num_leads, num_jobs, num_leads / num_jobs)
 # COMMAND ----------
 
 # Fetch the claimed leads
-claimed_leads = spark.sql("SELECT * from lakehouse_development.ml_features.analysis_job_lead_prices where job_lead_claimed = true").toPandas()
+claimed_leads = spark.sql(f"SELECT * from lakehouse_development.ml_features.analysis_job_lead_prices where job_lead_claimed = true and lead_created_timestamp >= '{start_date}' and lead_created_timestamp <= '{end_date}'").toPandas()
 len(claimed_leads)
 
 # COMMAND ----------
@@ -165,7 +167,9 @@ ax.grid("both")
 
 # COMMAND ----------
 
-query = """
+# start_date, end_date = '2024-09-12', '2024-10-08'
+start_date, end_date = '2025-07-12', '2025-08-08'
+query = f"""
 with predictions as (
     WITH ranked_requests AS (
     SELECT 
@@ -174,7 +178,7 @@ with predictions as (
         get_json_object(response, '$.predictions.prediction_zc') as zero_claims,
         ROW_NUMBER() OVER (PARTITION BY get_json_object(request, '$.dataframe_split.data[0][0]') ORDER BY date DESC) as rn
     FROM lakehouse_production.ml_features.persian_payload 
-    WHERE date >= '2025-01-01' AND status_code = '200'
+    WHERE date >= '{start_date}' AND date <= '{end_date}' AND status_code = '200'
     )
     SELECT 
         date,
@@ -189,6 +193,8 @@ total_claims as (
         sum(case when job_lead_claimed = 'true' then 1 else 0 end) as num_claims,
         case when num_claims = 0 then 1 else 0 end as true_zero_claims
     from lakehouse_development.ml_features.analysis_job_lead_prices
+    where lead_created_timestamp >= '{start_date}' AND lead_created_timestamp
+ <= '{end_date}'
     group by job_id
 )
 select predictions.job_id, predictions.date, predictions.zero_claims as predicted_zero_claims, total_claims.true_zero_claims, total_claims.num_claims
@@ -199,12 +205,11 @@ len(zero_claims)
 
 # COMMAND ----------
 
-zero_claims.head()
-
-# COMMAND ----------
-
+zero_claims = zero_claims.dropna()
 zero_claims["predicted_zero_claims"] = zero_claims["predicted_zero_claims"].astype(int)
 zero_claims["true_zero_claims"] = zero_claims["true_zero_claims"].astype(int)
+print(len(zero_claims))
+print(zero_claims["date"].min())
 
 # COMMAND ----------
 
@@ -214,20 +219,10 @@ true_negatives = sum((zero_claims["predicted_zero_claims"] == 0) & (zero_claims[
 false_negatives = sum((zero_claims["predicted_zero_claims"] == 0) & (zero_claims["true_zero_claims"] == 1))
 precision = true_positives / (true_positives + false_positives)
 recall = true_positives / (true_positives + false_negatives)
+print(f"{zero_claims['date'].min()} - {zero_claims['date'].max()}")
 print(f"Precision: {precision}")
 print(f"Recall: {recall}")
-
-# COMMAND ----------
-
-true_positives + false_positives, true_positives + false_negatives
-
-# COMMAND ----------
-
-len(zero_claims)
-
-# COMMAND ----------
-
-true_positives + true_negatives + false_positives + false_negatives == len(zero_claims)
+assert true_positives + true_negatives + false_positives + false_negatives == len(zero_claims)
 
 # COMMAND ----------
 
