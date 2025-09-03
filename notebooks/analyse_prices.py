@@ -154,6 +154,68 @@ ax.grid("both")
 # COMMAND ----------
 
 # MAGIC %md
+# MAGIC ## Compute the average lead price
+
+# COMMAND ----------
+
+# Compute the average lead price
+start_date = "2025-01-01"
+end_date = "2025-09-01"
+claimed_leads = spark.sql(f"SELECT * from lakehouse_development.ml_features.analysis_job_lead_prices where job_lead_claimed = true and lead_created_timestamp >= '{start_date}' and lead_created_timestamp <= '{end_date}'").toPandas()
+len(claimed_leads)
+
+# COMMAND ----------
+
+claimed_leads["job_lead_price"].hist()
+
+# COMMAND ----------
+
+claimed_leads["job_lead_price"].describe()
+
+# COMMAND ----------
+
+first_batch_prices = []
+other_batches_prices = []
+for job_id, group in claimed_leads.groupby(by="job_id"):
+    claimed_in = list((group["claimed_in"]).unique())
+    if "first-round-first-batch" in claimed_in and "first-round-other-batches" in claimed_in:
+        first_batch = group[group["claimed_in"] == "first-round-first-batch"]
+        first_batch_prices.append(first_batch["job_lead_price"].mean())
+        other_batches = group[group["claimed_in"] == "first-round-other-batches"]
+        other_batches_prices.append(other_batches["job_lead_price"].mean())
+first_batch_prices = np.array(first_batch_prices)
+other_batches_prices = np.array(other_batches_prices)
+print(np.mean(first_batch_prices), np.mean(other_batches_prices))
+
+# COMMAND ----------
+
+for weight in [0.25, 0.5, 0.75]:
+    new_price = np.mean(first_batch_prices * weight + other_batches_prices * (1 - weight))
+    print(f"{weight}: {new_price:.2f}")
+
+# COMMAND ----------
+
+fig, ax = plt.subplots()
+# ax.hist(first_batch_prices, alpha=0.5, bins=np.arange(0, 200, 10), label="first_batch_prices")
+ax.hist(other_batches_prices, alpha=0.5, bins=np.arange(0, 200, 10), label="other_batches_prices")
+ax.hist(first_batch_prices * 0.25 + other_batches_prices * 0.75, alpha=0.5, bins=np.arange(0, 200, 10), label="weighted_average_prices_DPWeight=0.25")
+# ax.hist(first_batch_prices * 0.5 + other_batches_prices * 0.5, alpha=0.5, bins=np.arange(0, 200, 10), label="weighted_average_prices_0.5")
+ax.set_xticks(np.arange(0, 200, 20))
+ax.legend()
+ax.grid("both")
+
+# COMMAND ----------
+
+fig, ax = plt.subplots()
+ax.hist(other_batches_prices, alpha=0.5, bins=np.arange(0, 200, 10), label="other_batches_prices")
+ax.hist(first_batch_prices * 0.25 + other_batches_prices * 0.75, alpha=0.5, bins=np.arange(0, 200, 10), label="weighted_average_prices_DPWeight=0.25")
+ax.set_xticks(np.arange(0, 200, 20))
+ax.legend()
+ax.grid("both")
+
+# COMMAND ----------
+
+# MAGIC %md
 # MAGIC # Compute the zero-claims accuracy
 
 # COMMAND ----------
