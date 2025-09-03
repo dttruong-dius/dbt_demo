@@ -206,12 +206,22 @@ ax.grid("both")
 
 # COMMAND ----------
 
-fig, ax = plt.subplots()
-ax.hist(other_batches_prices, alpha=0.5, bins=np.arange(0, 200, 10), label="other_batches_prices")
-ax.hist(first_batch_prices * 0.25 + other_batches_prices * 0.75, alpha=0.5, bins=np.arange(0, 200, 10), label="weighted_average_prices_DPWeight=0.25")
-ax.set_xticks(np.arange(0, 200, 20))
-ax.legend()
-ax.grid("both")
+first_batch_prices = []
+reinvitation_rounds_prices = []
+num_cases = 0
+num_jobs = 0
+for job_id, group in tqdm(claimed_leads.groupby(by="job_id")):
+    num_jobs += 1
+    claimed_in = list((group["claimed_in"]).unique())
+    if "first-round-first-batch" in claimed_in and "reinvitation-round" in claimed_in:
+        first_batch = group[group["claimed_in"] == "first-round-first-batch"]
+        first_batch_prices.append(first_batch["job_lead_price"].mean())
+        reinvitation_rounds = group[group["claimed_in"] == "reinvitation-round"]
+        reinvitation_rounds_prices.append(reinvitation_rounds["job_lead_price"].mean())
+        num_cases += 1
+first_batch_prices = np.array(first_batch_prices)
+reinvitation_rounds_prices = np.array(reinvitation_rounds_prices)
+print(np.mean(first_batch_prices), np.mean(reinvitation_rounds_prices), num_cases / num_jobs)
 
 # COMMAND ----------
 
