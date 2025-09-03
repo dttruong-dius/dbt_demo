@@ -7,7 +7,9 @@ select
     a.job_id,
     rtm.is_test_region_level,
     b.master_category,
+    b.category_id,
     rlm.state_code,
+    rlm.region_id,
     a.job_lead_price,
     a.job_lead_claimed,
     case
